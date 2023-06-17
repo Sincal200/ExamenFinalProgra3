@@ -34,17 +34,17 @@ public class CourseController {
     }
 
 	@PostMapping()
-    public Course createTask( @RequestBody Course course){
+    public Course create( @RequestBody Course course){
 		return courseService.create(course);
     }
 
 	@PutMapping(value = "/{id}")
-    public Course modifyTask( @PathVariable Long id, @RequestBody Course course){
+    public Course modify( @PathVariable Long id, @RequestBody Course course){
 		return courseService.modify(id,course);
     }
 
 	@DeleteMapping(value = "/{id}")
-	public void modificarProducto(@PathVariable Long id) {
+	public void delete(@PathVariable Long id) {
 		courseService.delete(id);
 	}
 

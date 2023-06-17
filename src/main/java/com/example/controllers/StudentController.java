@@ -15,9 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.daos.CourseDao;
+import com.example.daos.GradeDao;
 import com.example.daos.StudentDao;
 import com.example.entities.Course;
+import com.example.entities.GradeRequest;
 import com.example.entities.Student;
+import com.example.entities.Grade;
 
 import com.example.services.StudentService;
 
@@ -28,6 +31,7 @@ public class StudentController {
 	
 	private final StudentDao studentDao;
     private final CourseDao courseDao;
+    private final GradeDao gradeDao;
 
 	
 	@Autowired
@@ -45,24 +49,24 @@ public class StudentController {
     }
 
 	@PostMapping()
-    public Student createTask( @RequestBody Student student){
+    public Student create( @RequestBody Student student){
 		return studentService.create(student);
     }
 
 	@PutMapping(value = "/{id}")
-    public Student modifyTask( @PathVariable Long id, @RequestBody Student student){
+    public Student modify( @PathVariable Long id, @RequestBody Student student){
 		return studentService.modify(id,student);
     }
 
 	@DeleteMapping(value = "/{id}")
-	public void modificarProducto(@PathVariable Long id) {
+	public void delete(@PathVariable Long id) {
 		studentService.delete(id);
 	}
 	
-	
-	public StudentController(StudentDao studentDao, CourseDao courseDao) {
+	public StudentController(StudentDao studentDao, CourseDao courseDao, GradeDao gradeDao) {
         this.studentDao = studentDao;
         this.courseDao = courseDao;
+		this.gradeDao =  gradeDao;
     }
 
     @PostMapping("/{studentId}/courses/{courseId}")
@@ -103,6 +107,30 @@ public class StudentController {
         return ResponseEntity.ok().build();
     }
 
-	
+    @PostMapping("/grades")
+    public ResponseEntity<?> assignGrade(@RequestBody GradeRequest gradeRequest) {
+        Student student = studentDao.findById(gradeRequest.getStudentId()).orElse(null);
+        Course course = courseDao.findById(gradeRequest.getCourseId()).orElse(null);
+
+        if (student == null || course == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Grade grade = new Grade();
+        grade.setGrade(gradeRequest.getGrade());
+        grade.setStudent(student);
+        grade.setCourse(course);
+
+        student.addGrade(grade);
+
+        studentDao.save(student);
+
+        GradeRequest gradeResponse = new GradeRequest();
+        gradeResponse.setGrade(grade.getGrade());
+        gradeResponse.setCourseId(grade.getCourseId());
+
+        return ResponseEntity.ok(gradeResponse);
+    }
+
 
 }
