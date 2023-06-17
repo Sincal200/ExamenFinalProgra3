@@ -84,53 +84,5 @@ public class StudentController {
         return ResponseEntity.ok().build();
     }
     
-    @PutMapping("/{studentId}/courses")
-    public ResponseEntity<?> updateStudentCourses(@PathVariable Long studentId, @RequestBody List<Long> courseIds) {
-        Student student = studentDao.findById(studentId).orElse(null);
-
-        if (student == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        List<Course> courses = new ArrayList<>();
-
-        for (Long courseId : courseIds) {
-            Course course = courseDao.findById(courseId).orElse(null);
-            if (course != null) {
-                courses.add(course);
-            }
-        }
-
-        student.setCourses(courses);
-        studentDao.save(student);
-
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/grades")
-    public ResponseEntity<?> assignGrade(@RequestBody GradeRequest gradeRequest) {
-        Student student = studentDao.findById(gradeRequest.getStudentId()).orElse(null);
-        Course course = courseDao.findById(gradeRequest.getCourseId()).orElse(null);
-
-        if (student == null || course == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Grade grade = new Grade();
-        grade.setGrade(gradeRequest.getGrade());
-        grade.setStudent(student);
-        grade.setCourse(course);
-
-        student.addGrade(grade);
-
-        studentDao.save(student);
-
-        GradeRequest gradeResponse = new GradeRequest();
-        gradeResponse.setGrade(grade.getGrade());
-        gradeResponse.setCourseId(grade.getCourseId());
-
-        return ResponseEntity.ok(gradeResponse);
-    }
-
 
 }
