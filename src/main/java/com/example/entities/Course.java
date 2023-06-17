@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -19,12 +20,13 @@ public class Course {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String course;
+
 	
 	@JsonIgnore
 	@ManyToMany(mappedBy = "courses")
     private List<Student> students;
 	
-	
+
 	public List<Student> getStudents() {
 		return students;
 	}
